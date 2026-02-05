@@ -3,7 +3,7 @@ import path from "node:path";
 import Papa from "papaparse";
 
 const root = process.cwd();
-const csvPath = path.join(root, "events.csv");
+const csvPath = path.join(root, "public", "events.csv");
 const outPath = path.join(root, "public", "events.json");
 
 if (!fs.existsSync(csvPath)) {
