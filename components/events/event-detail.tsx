@@ -134,17 +134,6 @@ export function EventDetail({ event, onClose }: EventDetailProps) {
           )}
         </div>
 
-        <Separator />
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-            신청하기
-          </Button>
-          <Button variant="outline" className="flex-1 bg-transparent">
-            캘린더에 추가
-          </Button>
-        </div>
       </div>
     </div>
   )
