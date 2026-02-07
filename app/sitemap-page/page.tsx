@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 export default function SitemapPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -8,33 +6,52 @@ export default function SitemapPage() {
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
         {/* 닥스밋 인테리어 */}
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-foreground">닥스밋 인테리어</h2>
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
+            닥스밋 인테리어
+          </h2>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
-              <Link href="/" className="hover:text-foreground">
+              <a
+                href="https://doxtalk.co.kr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground"
+              >
                 인테리어 업체 모음
-              </Link>
+              </a>
             </li>
             <li>
-              <Link href="/register" className="hover:text-foreground">
+              <a
+                href="https://doxtalk.co.kr/register"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground"
+              >
                 업체 등록하기
-              </Link>
+              </a>
             </li>
             <li>
-              <Link href="/quote" className="hover:text-foreground">
+              <a
+                href="https://doxtalk.co.kr/quote"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground"
+              >
                 무료 개원 상담 신청
-              </Link>
+              </a>
             </li>
           </ul>
         </section>
 
         {/* KMA 서비스 */}
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-foreground">KMA 서비스</h2>
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
+            KMA 서비스
+          </h2>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
               <a
-                href="https://doxtalk.com"
+                href="https://doxtalk.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground"
@@ -47,11 +64,13 @@ export default function SitemapPage() {
 
         {/* DOXMEET */}
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-foreground">DOXMEET</h2>
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
+            DOXMEET
+          </h2>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
               <a
-                href="https://www.doxmeet.com"
+                href="https://www.doxmeet.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground"
