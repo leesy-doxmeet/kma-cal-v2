@@ -4,6 +4,9 @@ import { Geist } from "next/font/google"
 
 import "./globals.css"
 
+// ✅ 풋터 컴포넌트 import
+import { SiteFooter } from "@/components/footer/site-footer"
+
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
@@ -28,7 +31,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${geist.variable} font-sans antialiased`}>{children}</body>
+      <body className={`${geist.variable} font-sans antialiased`}>
+        {children}
+
+        {/* ✅ 전체 페이지 공통 풋터 */}
+        <SiteFooter />
+      </body>
     </html>
   )
 }

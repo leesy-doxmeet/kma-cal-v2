@@ -3,7 +3,8 @@
 import Link from "next/link"
 import Image from "next/image"
 
-import { Search, SlidersHorizontal, Calendar as CalendarIcon } from "lucide-react"
+import { Search, SlidersHorizontal, Calendar as CalendarIcon, Menu } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
@@ -11,6 +12,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+
 import { SPECIALTIES } from "@/lib/types"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -44,6 +47,9 @@ export function TopNav({
   const LOGO_WIDTH = 140
   const LOGO_HEIGHT = 36
   // =============================================
+
+  // ✅ 실제 인테리어 페이지(외부 링크)
+  const INTERIOR_URL = "https://doxtalk.co.kr"
 
   return (
     <header className="bg-card border-b border-border sticky top-0 z-30">
@@ -81,7 +87,43 @@ export function TopNav({
             </Link>
           </div>
 
-          {/* (선택) 우측 아이콘/버튼 자리 필요하면 여기에 추가 */}
+          {/* ===== 우측: 데스크톱 버튼 + 모바일 햄버거(메뉴 1개) ===== */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* 데스크톱: 외부 링크 버튼 */}
+            <Button asChild variant="outline" className="hidden md:inline-flex h-9">
+              <a href={INTERIOR_URL} target="_blank" rel="noreferrer">
+                인테리어 업체 모음
+              </a>
+            </Button>
+
+            {/* 모바일: 햄버거 -> Sheet */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="md:hidden h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">메뉴 열기</span>
+                </Button>
+              </SheetTrigger>
+
+              <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+                <SheetHeader>
+                  <SheetTitle>메뉴</SheetTitle>
+                </SheetHeader>
+
+                <div className="mt-6">
+                  <a
+                    href={INTERIOR_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block text-base font-semibold py-3 border-b border-border"
+                  >
+                    인테리어 업체 모음
+                  </a>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+          {/* ======================================================= */}
         </div>
 
         {/* ✅ 검색/필터 컨트롤: 모바일에서도 보이게 유지 */}
