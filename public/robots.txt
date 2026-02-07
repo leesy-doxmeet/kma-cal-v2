@@ -1,0 +1,5 @@
+# TEST BY SEO SETUP
+User-agent: *
+Allow: /
+
+Sitemap: https://doxtalk.com/sitemap.xml
