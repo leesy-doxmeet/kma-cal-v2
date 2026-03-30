@@ -4,13 +4,13 @@ import type { MedicalEvent } from "./types"
 type RawRow = Record<string, string>
 
 /**
- * Loads /data/events.csv from the public folder and converts it into MedicalEvent[].
+ * Loads /events.csv from the public folder and converts it into MedicalEvent[].
  * Expected columns (snake_case):
  * event_id,start_date,title,organizer,contact_name,contact_email,education_type,expected_attendees,
  * region,fee,fee_detail,notes,location,branch_or_department,contact_phone,credits,education_hours,
  * is_online,credits_normal,credits_ness,credits_all
  */
-export async function loadEventsFromCsv(url = "/data/events.csv"): Promise<MedicalEvent[]> {
+export async function loadEventsFromCsv(url = "/events.csv"): Promise<MedicalEvent[]> {
   const res = await fetch(url, { cache: "no-store" })
   if (!res.ok) throw new Error(`Failed to fetch events CSV: ${res.status}`)
   const csv = await res.text()

@@ -37,7 +37,7 @@ useEffect(() => {
     try {
       setIsLoading(true)
       setLoadError(null)
-      const events = await loadEventsFromCsv("/data/events.csv")
+      const events = await loadEventsFromCsv("/events.csv")
       if (!cancelled) setAllEvents(events)
     } catch (e: any) {
       console.error(e)
