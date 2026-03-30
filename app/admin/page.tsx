@@ -282,6 +282,28 @@ export default function AdminPage() {
     }
   }, [])
 
+  // Last upload info
+  const [lastUploadFile, setLastUploadFile] = useState<string | null>(null)
+  const [lastUploadTime, setLastUploadTime] = useState<string | null>(null)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setLastUploadFile(localStorage.getItem('kma_last_upload_filename'))
+      setLastUploadTime(localStorage.getItem('kma_last_upload_time'))
+    }
+  }, [])
+
+  // Token guide toggle
+  const [showTokenGuide, setShowTokenGuide] = useState(false)
+  useEffect(() => {
+    // Auto-expand guide if no token saved
+    if (typeof window !== 'undefined' && !localStorage.getItem('github_pat')) {
+      setShowTokenGuide(true)
+    }
+  }, [])
+
+  // Upload filename for saving later
+  const [uploadedFilename, setUploadedFilename] = useState('')
+
   // State
   const [step, setStep] = useState<Step>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -314,6 +336,7 @@ export default function AdminPage() {
   // ─── PAT ──────────────────────────────────────────────────────────
   const savePat = useCallback(() => {
     localStorage.setItem('github_pat', pat)
+    setShowTokenGuide(false)
   }, [pat])
 
   const clearPat = useCallback(() => {
@@ -327,6 +350,7 @@ export default function AdminPage() {
       try {
         setStep('parsing')
         setErrorMsg('')
+        setUploadedFilename(file.name)
 
         // Extract reference date from filename
         const date = extractRefDate(file.name)
@@ -413,12 +437,19 @@ export default function AdminPage() {
         sha
       )
 
+      // Save upload info to localStorage
+      const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+      localStorage.setItem('kma_last_upload_filename', uploadedFilename)
+      localStorage.setItem('kma_last_upload_time', now)
+      setLastUploadFile(uploadedFilename)
+      setLastUploadTime(now)
+
       setStep('done')
     } catch (e: any) {
       setErrorMsg(e?.message ?? '커밋 중 오류가 발생했습니다.')
       setStep('error')
     }
-  }, [pat, diffEvents, refDate, addCount, deleteCount])
+  }, [pat, diffEvents, refDate, addCount, deleteCount, uploadedFilename])
 
   // ─── Reset ────────────────────────────────────────────────────────
   const handleReset = useCallback(() => {
@@ -427,6 +458,7 @@ export default function AdminPage() {
     setRefDate('')
     setDiffEvents([])
     setExistingEvents([])
+    setUploadedFilename('')
   }, [])
 
   // ─── Login Screen ─────────────────────────────────────────────────
@@ -493,6 +525,24 @@ export default function AdminPage() {
       </header>
 
       <div className="max-w-screen-lg mx-auto px-4 py-6 space-y-6">
+
+        {/* ─── Last Upload Info ─────────────────────────────────── */}
+        <section className="bg-card rounded-xl border border-border p-4">
+          <div className="flex items-center gap-2 text-sm">
+            <svg className="h-4 w-4 text-muted-foreground shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {lastUploadFile ? (
+              <span className="text-card-foreground">
+                최근 업로드: <strong>{lastUploadFile}</strong>
+                <span className="text-muted-foreground ml-2">({lastUploadTime})</span>
+              </span>
+            ) : (
+              <span className="text-muted-foreground">아직 업로드 기록이 없습니다.</span>
+            )}
+          </div>
+        </section>
+
         {/* ─── GitHub PAT Settings ──────────────────────────────── */}
         <section className="bg-card rounded-xl border border-border p-5">
           <h2 className="text-base font-semibold text-card-foreground mb-3">GitHub 설정</h2>
@@ -520,8 +570,49 @@ export default function AdminPage() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            토큰은 브라우저 localStorage에 저장됩니다. repo 권한이 필요합니다.
+            토큰은 브라우저 localStorage에 저장됩니다. 무료이며, 한 번 설정하면 만료 전까지 재입력 불필요합니다.
           </p>
+
+          {/* ─── Token Guide (collapsible) ──────────────────────── */}
+          <div className="mt-3 border-t border-border pt-3">
+            <button
+              onClick={() => setShowTokenGuide(!showTokenGuide)}
+              className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              <svg
+                className={`h-4 w-4 transition-transform ${showTokenGuide ? 'rotate-90' : ''}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              GitHub 토큰 발급 방법
+            </button>
+            {showTokenGuide && (
+              <div className="mt-3 bg-muted/50 rounded-lg p-4 text-sm text-card-foreground space-y-3">
+                <p className="font-medium">토큰 발급 페이지:</p>
+                <a
+                  href="https://github.com/settings/tokens?type=beta"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-primary underline hover:no-underline break-all"
+                >
+                  https://github.com/settings/tokens?type=beta
+                </a>
+                <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                  <li>위 링크 접속 후 <strong className="text-card-foreground">&quot;Generate new token&quot;</strong> 클릭</li>
+                  <li>Token name: 아무 이름 입력 (예: <strong className="text-card-foreground">kma-cal-admin</strong>)</li>
+                  <li>Expiration: 원하는 기간 선택 (<strong className="text-card-foreground">90일 추천</strong>)</li>
+                  <li>Repository access: <strong className="text-card-foreground">&quot;Only select repositories&quot;</strong> → <strong className="text-card-foreground">leesy-doxmeet/kma-cal-v2</strong> 선택</li>
+                  <li>Permissions: <strong className="text-card-foreground">&quot;+ Add permissions&quot;</strong> 클릭 → <strong className="text-card-foreground">&quot;Contents&quot;</strong> → <strong className="text-card-foreground">&quot;Read and write&quot;</strong> 선택</li>
+                  <li><strong className="text-card-foreground">&quot;Generate token&quot;</strong> 클릭 후 토큰 복사</li>
+                  <li>이 페이지의 위 입력란에 붙여넣기 후 <strong className="text-card-foreground">&quot;저장&quot;</strong> 클릭</li>
+                </ol>
+                <p className="text-xs text-muted-foreground pt-1">
+                  * 토큰 발급은 무료이며, GitHub 계정만 있으면 됩니다.
+                </p>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ─── Progress Steps ──────────────────────────────────── */}
@@ -615,6 +706,22 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Actions - 맨 위에 배치 */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleReset}
+                className="rounded-lg border border-border bg-transparent px-5 py-2.5 text-sm font-medium text-card-foreground hover:bg-muted transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleApply}
+                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                적용 (GitHub에 커밋)
+              </button>
+            </div>
+
             {/* Diff table */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="overflow-x-auto">
@@ -664,22 +771,6 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleReset}
-                className="rounded-lg border border-border bg-transparent px-5 py-2.5 text-sm font-medium text-card-foreground hover:bg-muted transition-colors"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleApply}
-                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                적용 (GitHub에 커밋)
-              </button>
             </div>
           </section>
         )}
